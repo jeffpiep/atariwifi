@@ -38,6 +38,7 @@ public:
         PRINTER_ATARI_1027,
         PRINTER_ATARI_1029,
         PRINTER_EPSON,
+        PRINTER_OKIMATE_10,
         PRINTER_PNG,
         PRINTER_HTML,
         PRINTER_HTML_ATASCII,

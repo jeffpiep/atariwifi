@@ -16,22 +16,48 @@ void okimate10::pdf_handle_char(uint8_t c, uint8_t aux1, uint8_t aux2)
         // ESC CTRL-W - start international   0x17 23
         // ESC CTRL-X - stop international    0x18 24
 
+        // Okimate 10 extras codes:
+        // ESC CTRL-T ESC CTRL-N - 8.25 char/inch (0x14, 0x0E)
+        // 0x99     Align Ribbon (for color mode)
+        // 0x9B     EOL for color mode
+
+        // 0x8A n    n/144" line advance (n * 1/2 pt vertial line feed)
+        // 0x8C     form feed
+        // ESC A - perforation skip OFF
+        // ESC B - perforation skip ON
+
+        // ESC % - start graphics mode
+        // 0x91 - stop graphics mode
+        // 0x9A n data - repeat graphics data n times
+
+        // 0x90 n - dot column horizontal tab
+
         switch (c)
         {
         case 0x0E:
             // change font to elongated like
-            fprintf(_file, ")]TJ\n 200 Tz [(");
-            charWidth = 14.4; //72.0 / 5.0;
+            if (!compressedMode)
+            {
+                fprintf(_file, ")]TJ\n 200 Tz [(");
+                charWidth = 14.4; //72.0 / 5.0;
+            }
+            else
+            {
+                fprintf(_file, ")]TJ\n 121.21 Tz [(");
+                charWidth = 72.0 / 8.25;
+            }
             break;
         case 0x0F:
             // change font to normal
             fprintf(_file, ")]TJ\n 100 Tz [(");
             charWidth = 7.2; //72.0 / 10.0;
+            compressedMode = false;
             break;
         case 0x14:
             // change font to compressed
             fprintf(_file, ")]TJ\n 60.606 Tz [(");
             charWidth = 72.0 / 16.5;
+            compressedMode = true;
             break;
         case 0x17: // 23
             intlFlag = true;
@@ -68,5 +94,5 @@ void okimate10::pdf_handle_char(uint8_t c, uint8_t aux1, uint8_t aux2)
 void okimate10::post_new_file()
 {
     atari1025::post_new_file();
-   // shortname = "oki10";
+    // shortname = "oki10";
 }
